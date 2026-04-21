@@ -78,16 +78,20 @@ async function analyzeSingle() {
             body: formData
         });
 
-        if (!res.ok) throw new Error(`Server error: ${res.status}`);
-
         const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.error || `Server error ${res.status}`);
+        }
+
         showLoading(false);
         renderResult(data);
         updateHeaderCount();
 
     } catch (err) {
         showLoading(false);
-        alert('Analysis failed: ' + err.message);
+        document.getElementById('emptyState').classList.remove('hidden');
+        alert('Analysis failed: ' + err.message + '\n\nMake sure Flask is running and the model file is in the project folder.');
     }
 }
 
@@ -180,28 +184,72 @@ function renderResult(data) {
 // ===========================
 function handleBatchFiles(input) {
     if (input.files.length === 0) return;
-    selectedBatchFiles = Array.from(input.files);
 
+    // ACCUMULATE across multiple selections instead of replacing
+    const newFiles = Array.from(input.files);
+    newFiles.forEach(newFile => {
+        const isDupe = selectedBatchFiles.some(
+            f => f.name === newFile.name && f.size === newFile.size
+        );
+        if (!isDupe) selectedBatchFiles.push(newFile);
+    });
+
+    // Reset so same file can be picked again if needed
+    input.value = '';
+
+    renderBatchStrip();
+}
+
+function renderBatchStrip() {
     const strip = document.getElementById('batchPreviewStrip');
     strip.innerHTML = '';
+
+    if (selectedBatchFiles.length === 0) {
+        strip.classList.add('hidden');
+        document.getElementById('batchInfo').textContent = '';
+        document.getElementById('batchBtn').disabled = true;
+        return;
+    }
+
     strip.classList.remove('hidden');
 
-    selectedBatchFiles.forEach(file => {
+    selectedBatchFiles.forEach((file, idx) => {
         const reader = new FileReader();
         reader.onload = (e) => {
+            const wrap = document.createElement('div');
+            wrap.style.cssText = 'position:relative;display:inline-block;flex-shrink:0;';
+
             const img = document.createElement('img');
             img.src = e.target.result;
             img.className = 'batch-thumb';
             img.title = file.name;
-            strip.appendChild(img);
+
+            const btn = document.createElement('button');
+            btn.textContent = '×';
+            btn.style.cssText = [
+                'position:absolute;top:-5px;right:-5px',
+                'width:18px;height:18px;border-radius:50%',
+                'background:#ff4560;color:white;border:none',
+                'font-size:12px;cursor:pointer;line-height:1;padding:0',
+                'display:flex;align-items:center;justify-content:center',
+                'font-weight:bold;z-index:10'
+            ].join(';');
+            btn.onclick = (ev) => {
+                ev.stopPropagation();
+                selectedBatchFiles.splice(idx, 1);
+                renderBatchStrip();
+            };
+
+            wrap.appendChild(img);
+            wrap.appendChild(btn);
+            strip.appendChild(wrap);
         };
         reader.readAsDataURL(file);
     });
 
     document.getElementById('batchInfo').textContent =
-        `${selectedBatchFiles.length} cells selected`;
+        `${selectedBatchFiles.length} cell${selectedBatchFiles.length !== 1 ? 's' : ''} selected — click the zone again to add more`;
     document.getElementById('batchBtn').disabled = false;
-    document.getElementById('batchResult').classList.add('hidden');
 }
 
 // ===========================
@@ -218,22 +266,23 @@ async function analyzeBatch() {
     document.getElementById('batchResult').classList.add('hidden');
 
     const loadingText = document.getElementById('batchLoadingText');
-    let processed = 0;
     const total = selectedBatchFiles.length;
+    let counter = 0;
 
     const counterInterval = setInterval(() => {
-        processed = Math.min(processed + 1, total - 1);
-        loadingText.textContent = `Processing cell ${processed + 1} of ${total}...`;
-    }, 300);
+        counter = Math.min(counter + 1, total - 1);
+        loadingText.textContent = `Processing cell ${counter + 1} of ${total}...`;
+    }, Math.max(200, 1000 / total));
 
     try {
         const res = await fetch('/predict-batch', { method: 'POST', body: formData });
-        if (!res.ok) throw new Error(`Server error: ${res.status}`);
         const data = await res.json();
 
         clearInterval(counterInterval);
         document.getElementById('batchLoadingState').classList.add('hidden');
         document.getElementById('batchBtn').disabled = false;
+
+        if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
 
         renderBatchResult(data);
         updateHeaderCount();
