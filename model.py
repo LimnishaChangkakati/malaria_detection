@@ -17,7 +17,12 @@ print("Model loaded!")
 def predict_image(img_array):
     prob = float(model.predict(img_array, verbose=0)[0][0])
 
-    prediction = "Parasitized" if prob > 0.5 else "Uninfected"
+    # IMPORTANT: ImageDataGenerator.flow_from_directory assigns class indices alphabetically:
+    #   Parasitized = 0  (P < U alphabetically)
+    #   Uninfected  = 1
+    # The sigmoid output = probability of class 1 (Uninfected).
+    # So: prob > 0.5 means Uninfected, prob < 0.5 means Parasitized.
+    prediction = "Uninfected" if prob > 0.5 else "Parasitized"
     confidence = prob if prob > 0.5 else 1 - prob
 
     return prediction, confidence, prob
