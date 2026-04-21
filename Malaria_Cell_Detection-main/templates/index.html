@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MalariaScope AI — Cell Detection System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<!-- Animated grid background -->
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<div class="app-wrapper">
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">
+                <span class="logo-icon">⬡</span>
+                <span class="logo-text">MalariaScope <span class="logo-accent">AI</span></span>
+            </div>
+            <span class="version-badge">v2.1 · MobileNetV2</span>
+        </div>
+        <div class="header-right">
+            <div class="live-indicator">
+                <span class="pulse-dot"></span>
+                <span>Model Active</span>
+            </div>
+            <div class="stat-pill" id="headerTotal">0 scans</div>
+        </div>
+    </header>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero">
+        <p class="hero-label">PLASMODIUM DETECTION SYSTEM</p>
+        <h1 class="hero-title">Blood Smear<br><span class="hero-gradient">Analysis</span></h1>
+        <p class="hero-sub">Upload a Giemsa-stained cell image. The model detects <em>P. falciparum</em> parasites using deep learning with visual explanation.</p>
+    </section>
+
+    <!-- ===== TABS ===== -->
+    <div class="tab-bar">
+        <button class="tab active" onclick="switchTab('single', this)">
+            <span>◈</span> Single Cell
+        </button>
+        <button class="tab" onclick="switchTab('batch', this)">
+            <span>⊞</span> Batch Analysis
+        </button>
+        <button class="tab" onclick="switchTab('history', this)">
+            <span>◷</span> History
+        </button>
+    </div>
+
+    <!-- ===== SINGLE TAB ===== -->
+    <div id="tab-single" class="tab-content active">
+        <div class="two-col">
+
+            <!-- Upload Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">INPUT</span>
+                    <span class="panel-tag">JPG / PNG / BMP</span>
+                </div>
+
+                <div class="drop-zone" id="dropZone" onclick="document.getElementById('singleFile').click()">
+                    <input type="file" id="singleFile" accept="image/*" hidden onchange="handleSingleFile(this)">
+                    <div class="drop-icon">⬡</div>
+                    <p class="drop-primary">Drop cell image here</p>
+                    <p class="drop-secondary">or click to browse</p>
+                    <div class="drop-formats">JPG · PNG · BMP · TIFF</div>
+                </div>
+
+                <div id="singlePreviewWrap" class="preview-wrap hidden">
+                    <img id="singlePreview" class="preview-image" alt="Preview">
+                    <div class="preview-meta" id="previewMeta"></div>
+                </div>
+
+                <button class="btn-primary" id="analyzeBtn" onclick="analyzeSingle()" disabled>
+                    <span class="btn-icon">▶</span> Run Analysis
+                </button>
+
+                <div class="model-info">
+                    <div class="info-row"><span>Architecture</span><span>MobileNetV2</span></div>
+                    <div class="info-row"><span>Input Size</span><span>128 × 128</span></div>
+                    <div class="info-row"><span>Preprocessing</span><span>CLAHE · LAB</span></div>
+                    <div class="info-row"><span>Explainability</span><span>Grad-CAM</span></div>
+                </div>
+            </div>
+
+            <!-- Result Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">RESULT</span>
+                    <span class="panel-tag" id="resultTimestamp">—</span>
+                </div>
+
+                <!-- Loading state -->
+                <div id="loadingState" class="loading-state hidden">
+                    <div class="scanner">
+                        <div class="scanner-line"></div>
+                        <div class="scanner-grid"></div>
+                    </div>
+                    <p class="loading-text">Analyzing cell morphology...</p>
+                    <div class="loading-steps">
+                        <span class="step active" id="step1">Preprocessing</span>
+                        <span class="step-arrow">→</span>
+                        <span class="step" id="step2">Inference</span>
+                        <span class="step-arrow">→</span>
+                        <span class="step" id="step3">Grad-CAM</span>
+                    </div>
+                </div>
+
+                <!-- Empty state -->
+                <div id="emptyState" class="empty-state">
+                    <div class="empty-icon">◈</div>
+                    <p>Upload an image and click <strong>Run Analysis</strong> to see the prediction here.</p>
+                </div>
+
+                <!-- Result content -->
+                <div id="resultContent" class="hidden">
+
+                    <!-- Verdict banner -->
+                    <div class="verdict-banner" id="verdictBanner">
+                        <div class="verdict-icon" id="verdictIcon"></div>
+                        <div class="verdict-text">
+                            <div class="verdict-label" id="verdictLabel"></div>
+                            <div class="verdict-sub" id="verdictSub"></div>
+                        </div>
+                        <div class="risk-badge" id="riskBadge"></div>
+                    </div>
+
+                    <!-- Confidence bar -->
+                    <div class="confidence-section">
+                        <div class="conf-header">
+                            <span>Confidence</span>
+                            <span id="confValue" class="conf-value"></span>
+                        </div>
+                        <div class="conf-bar-track">
+                            <div class="conf-bar-fill" id="confBar"></div>
+                        </div>
+                        <div class="conf-labels">
+                            <span>0%</span><span>50%</span><span>100%</span>
+                        </div>
+                    </div>
+
+                    <!-- Metrics grid -->
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <div class="metric-val" id="mUncertainty"></div>
+                            <div class="metric-key">Uncertainty</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-val" id="mLatency"></div>
+                            <div class="metric-key">Latency</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-val" id="mProb"></div>
+                            <div class="metric-key">Raw Prob.</div>
+                        </div>
+                    </div>
+
+                    <!-- Advice -->
+                    <div class="advice-box" id="adviceBox">
+                        <span class="advice-icon">⚕</span>
+                        <span id="adviceText"></span>
+                    </div>
+
+                    <!-- Grad-CAM -->
+                    <div class="gradcam-section">
+                        <div class="panel-header">
+                            <span class="panel-title">GRAD-CAM HEATMAP</span>
+                            <span class="panel-tag">Activation Map</span>
+                        </div>
+                        <div class="gradcam-compare">
+                            <div class="gradcam-item">
+                                <img id="origImg" class="gradcam-img" alt="Original">
+                                <span class="gradcam-label">Original</span>
+                            </div>
+                            <div class="gradcam-item">
+                                <img id="heatmapImg" class="gradcam-img" alt="Heatmap">
+                                <span class="gradcam-label">Activation</span>
+                            </div>
+                        </div>
+                        <p class="gradcam-note">Red regions indicate areas most influential in the model's decision.</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== BATCH TAB ===== -->
+    <div id="tab-batch" class="tab-content">
+        <div class="panel full-width">
+            <div class="panel-header">
+                <span class="panel-title">BATCH ANALYSIS</span>
+                <span class="panel-tag">Multiple cells · Parasitemia estimation</span>
+            </div>
+
+            <div class="drop-zone" id="batchDropZone" onclick="document.getElementById('batchFiles').click()">
+                <input type="file" id="batchFiles" accept="image/*" multiple hidden onchange="handleBatchFiles(this)">
+                <div class="drop-icon">⊞</div>
+                <p class="drop-primary">Drop multiple cell images</p>
+                <p class="drop-secondary">Select all cells from a sample for parasitemia estimation</p>
+            </div>
+
+            <div id="batchPreviewStrip" class="batch-strip hidden"></div>
+            <div class="batch-info" id="batchInfo"></div>
+
+            <button class="btn-secondary" id="batchBtn" onclick="analyzeBatch()" disabled>
+                <span class="btn-icon">⊞</span> Analyze Batch
+            </button>
+
+            <div id="batchLoadingState" class="loading-state hidden">
+                <div class="scanner small">
+                    <div class="scanner-line"></div>
+                </div>
+                <p class="loading-text" id="batchLoadingText">Processing cells...</p>
+            </div>
+
+            <div id="batchResult" class="batch-result hidden">
+                <div class="batch-result-header">Batch Report</div>
+                <div class="batch-metrics">
+                    <div class="batch-metric">
+                        <div class="bm-val" id="bmTotal"></div>
+                        <div class="bm-key">Total Cells</div>
+                    </div>
+                    <div class="batch-metric infected-metric">
+                        <div class="bm-val" id="bmInfected"></div>
+                        <div class="bm-key">Infected</div>
+                    </div>
+                    <div class="batch-metric healthy-metric">
+                        <div class="bm-val" id="bmHealthy"></div>
+                        <div class="bm-key">Healthy</div>
+                    </div>
+                    <div class="batch-metric">
+                        <div class="bm-val" id="bmParasitemia"></div>
+                        <div class="bm-key">Parasitemia</div>
+                    </div>
+                    <div class="batch-metric">
+                        <div class="bm-val" id="bmSeverity"></div>
+                        <div class="bm-key">Severity</div>
+                    </div>
+                </div>
+
+                <div class="parasitemia-bar-wrap">
+                    <div class="para-label">Parasitemia Level</div>
+                    <div class="para-track">
+                        <div class="para-fill" id="paraFill"></div>
+                        <div class="para-zones">
+                            <span>Mild</span><span>Moderate</span><span>Severe</span><span>Critical</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="batchDetailList" class="batch-detail-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== HISTORY TAB ===== -->
+    <div id="tab-history" class="tab-content">
+        <div class="panel full-width">
+            <div class="panel-header">
+                <span class="panel-title">SCAN HISTORY</span>
+                <span class="panel-tag">Last 20 predictions · This session</span>
+            </div>
+
+            <div class="session-stats-bar">
+                <div class="ss-item">
+                    <span class="ss-val" id="ssTotal">0</span>
+                    <span class="ss-key">Total Scans</span>
+                </div>
+                <div class="ss-item">
+                    <span class="ss-val infected-text" id="ssInfected">0</span>
+                    <span class="ss-key">Infected</span>
+                </div>
+                <div class="ss-item">
+                    <span class="ss-val healthy-text" id="ssHealthy">0</span>
+                    <span class="ss-key">Uninfected</span>
+                </div>
+                <div class="ss-item">
+                    <span class="ss-val" id="ssRate">—</span>
+                    <span class="ss-key">Infection Rate</span>
+                </div>
+                <div class="ss-item">
+                    <span class="ss-val" id="ssAvgLatency">—</span>
+                    <span class="ss-key">Avg Latency</span>
+                </div>
+            </div>
+
+            <button class="btn-ghost" onclick="loadHistory()">↻ Refresh History</button>
+
+            <div id="historyList" class="history-list">
+                <div class="empty-state">
+                    <div class="empty-icon">◷</div>
+                    <p>No predictions yet. Run an analysis to see history here.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <p>MalariaScope AI · MobileNetV2 trained on NIH Cell Image Dataset · <span class="footer-warn">⚠ For research use only — not a medical device</span></p>
+    </footer>
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
