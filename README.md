@@ -1,155 +1,216 @@
-# Malaria_Cell_Detection
-Automated malaria detection using MobileNetV2 to classify blood cell images, deployed as a real-time web app over a 5G telemedicine network for rapid and accessible diagnosis.
-# Automated Malaria Detection System
+# 🧬 MalariaScope AI — Blood Smear Analysis System
 
-## Overview
-
-This project presents an AI-based malaria detection system using a lightweight deep learning model (MobileNetV2) to classify blood smear images as Parasitized or Uninfected.
-
-The system is deployed as a real-time web application using a Python backend, enabling fast and reliable diagnosis suitable for resource-limited environments and telemedicine use cases.
+A deep learning-powered web application for **malaria detection from blood smear images**, enhanced with **visual explainability (Grad-CAM)** and a **modern dark-themed interface**.
 
 ---
 
-## Objectives
+## 🚀 Overview
 
-* Automate malaria detection using deep learning
-* Provide rapid and accurate diagnosis
-* Enable deployment in low-resource healthcare settings
-* Support real-time inference through a web interface
+**MalariaScope AI** is an end-to-end AI system that allows users to upload microscopic blood cell images and instantly detect the presence of *Plasmodium falciparum* parasites.
 
----
+The system combines:
 
-## Model Details
-
-* Model: MobileNetV2 (Transfer Learning)
-* Framework: TensorFlow / Keras
-* Key advantages:
-
-  * Lightweight (~2.4M parameters)
-  * Fast inference on CPU
-  * High accuracy with low computational cost
+* 🔍 **Computer Vision (CNNs)**
+* ⚡ **Real-time inference (Flask backend)**
+* 🎯 **Explainable AI (Grad-CAM)**
+* 🎨 **Modern UI/UX (Dark Theme Interface)**
 
 ---
 
-## Dataset
+## ✨ Key Features
 
-* Source: NIH Malaria Cell Image Dataset
-* Total Images: 27,558
+### 🧠 AI-Powered Detection
 
-  * 13,779 Parasitized
-  * 13,779 Uninfected
-* Split:
-
-  * 80% Training
-  * 20% Validation
-
-Each image represents a single red blood cell under a microscope.
+* Binary classification: **Parasitized vs Uninfected**
+* Built using **MobileNetV2 (Transfer Learning)**
+* Optimized for fast and accurate predictions
 
 ---
 
-## Preprocessing Pipeline
+### 🎯 Explainable AI (Grad-CAM)
 
-* Resize images to 128×128
-* Normalize pixel values (0–255 → 0–1)
-* Data augmentation (training only):
+* Visual heatmaps showing **where the model is focusing**
+* Helps understand **model decisions**
+* Displays:
 
-  * Rotation
-  * Flips
-  * Zoom
-
----
-
-## Model Architecture
-
-* MobileNetV2 base (pretrained on ImageNet, initially frozen)
-* Global Average Pooling
-* Batch Normalization
-* Dense layers with Dropout
-* Sigmoid output layer for binary classification
+  * Original image
+  * Activation map
 
 ---
 
-## Training Strategy
+### 📊 Detailed Prediction Insights
 
-### Phase 1: Frozen Base
-
-* Train only classification head
-* Learning rate: 0.001
-* Achieves ~90% validation accuracy
-
-### Phase 2: Fine-Tuning
-
-* Unfreeze top layers of MobileNetV2
-* Learning rate: 1e-5
-* Improves performance further
-* Early stopping applied
+* Confidence score (%)
+* Latency (in ms)
+* Uncertainty estimation
+* Raw probability output
 
 ---
 
-## Results
+### 🖥️ Professional Dark UI
 
-* Accuracy: 94.3%
-* AUC-ROC: 0.9846
-
-The model is slightly conservative, prioritizing detection of infected cells, which is safer for screening scenarios.
-
----
-
-## Web Application
-
-### Backend
-
-* Python (Flask via `app.py`)
-
-### API Endpoints
-
-* POST /predict — Upload image and get prediction
-* GET /history — Retrieve prediction history
-* GET /stats — System statistics
-
-### Features
-
-* Image upload and preview
-* Real-time prediction
-* Simple and user-friendly interface
+* Clean, modern, responsive interface
+* Drag & drop image upload
+* Real-time result visualization
+* Clearly separated input & result panels
 
 ---
 
-## Workflow
+### ⚡ Real-Time Web App
 
-1. User uploads a blood smear image
-2. Image is sent to backend API
-3. Model performs inference
-4. Prediction is returned
-5. Result is displayed
+* Built with **Flask**
+* Instant inference after upload
+* Runs locally or on network (LAN access supported)
 
 ---
 
-## Performance
+### 🗂️ Structured Pipeline
 
-* Inference time: ~225–272 ms
-* End-to-end latency: ~0.5s – 1.5s
-
----
-
-## Key Highlights
-
-* Lightweight and efficient model
-* Real-time deployment (not just experimental)
-* Full dataset utilization
-* Two-phase fine-tuning approach
-* Suitable for telemedicine applications
+* Image preprocessing
+* Model inference
+* Grad-CAM generation
+* Result visualization
 
 ---
 
-## Future Work
+## 🏗️ Tech Stack
 
-* Grad-CAM for model explainability
-* Multi-class malaria stage detection
-* Mobile/edge deployment
-* Broader dataset generalization
+| Layer          | Technology              |
+| -------------- | ----------------------- |
+| ML Model       | TensorFlow / Keras      |
+| Architecture   | MobileNetV2             |
+| Backend        | Flask                   |
+| Frontend       | HTML, CSS, JavaScript   |
+| Explainability | Grad-CAM                |
+| Dataset        | NIH Malaria Cell Images |
 
 ---
+
+## 📁 Project Structure
+
+```bash
+Malaria_Cell_Detection/
+│
+├── app.py                  # Flask app
+├── model.py                # Load trained model
+├── train_model.py          # Model training script
+├── preprocessing.py        # Image preprocessing
+├── gradcam.py              # Grad-CAM implementation
+│
+├── templates/
+│   └── index.html          # UI layout
+│
+├── static/
+│   ├── style.css           # Styling
+│   └── script.js           # Frontend logic
+│
+├── cell_images/            # Dataset
+├── malaria_model_final.h5  # Trained model
+```
+
+---
+
+## 🧪 How It Works
+
+1. Upload a blood smear image
+2. Image is preprocessed (resize + normalization)
+3. Model predicts infection status
+4. Grad-CAM generates heatmap
+5. Results displayed with metrics
+
+---
+
+## ⚙️ Setup & Run
+
+### 1. Clone the repo
+
+```bash
+git clone <your-repo-link>
+cd Malaria_Cell_Detection
+```
+
+### 2. Create virtual environment
+
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+### 3. Install dependencies
+
+```bash
+pip install tensorflow flask numpy opencv-python
+```
+
+### 4. Run the app
+
+```bash
+python app.py
+```
+
+---
+
+## 🌐 Access
+
+Open in browser:
+
+```
+http://127.0.0.1:5000
+```
+
+Or on your network:
+
+```
+http://<your-ip>:5000
+```
+
+---
+
+## 📈 Model Performance
+
+* Accuracy: ~93–95%
+* Lightweight architecture (MobileNetV2)
+* Fast inference (~100–150 ms)
+
+---
+
+## ⚠️ Disclaimer
+
+> This project is for **educational and research purposes only**.
+> It is **not a certified medical diagnostic tool**.
+
+---
+
+## 💡 Future Improvements
+
+* Multi-class malaria classification
+* Cloud deployment (AWS / Render)
+* User authentication & history tracking
+* Mobile-friendly optimization
+* Dataset expansion for robustness
+
+---
+
+## 🤝 Contributors
+
+* **You** (AI + Backend + UI)
+* Your teammate(s)
+
+---
+
+## ⭐ Final Note
+
+This project demonstrates:
+
+* End-to-end ML pipeline
+* Real-world healthcare application
+* Explainable AI integration
+* Full-stack AI deployment
+
+---
+
+> 🚀 Built with passion for AI, healthcare, and impactful technology.
+
 
 ## Contributors
 
