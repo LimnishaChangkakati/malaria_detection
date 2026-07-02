@@ -193,8 +193,8 @@ http://<your-ip>:5000
 
 ## 🤝 Contributors
 
-* **You** (AI + Backend + UI)
-* Your teammate(s)
+* Limnisha Changkakati
+* Natalia Mathews
 
 ---
 
