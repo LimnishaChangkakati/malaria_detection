@@ -1,4 +1,4 @@
-# 🧬 MalariaScope AI — Blood Smear Analysis System
+# 🧬 MalariaScope AI - Blood Smear Analysis System
 
 A deep learning-powered web application for **malaria detection from blood smear images**, enhanced with **visual explainability (Grad-CAM)** and a **modern dark-themed interface**.
 
