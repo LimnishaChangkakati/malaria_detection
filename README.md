@@ -1,148 +1,266 @@
-# 🧬 MalariaScope AI - Blood Smear Analysis System
+# 🦠 MalariaScope AI
+### AI-Powered Malaria Cell Detection using Deep Learning, Transfer Learning, and Explainable AI
 
-A deep learning-powered web application for **malaria detection from blood smear images**, enhanced with **visual explainability (Grad-CAM)** and a **modern dark-themed interface**.
+<p align="center">
 
----
+![Python](https://img.shields.io/badge/Python-3.11-blue?style=for-the-badge&logo=python)
+![TensorFlow](https://img.shields.io/badge/TensorFlow-Deep%20Learning-FF6F00?style=for-the-badge&logo=tensorflow)
+![Keras](https://img.shields.io/badge/Keras-CNN-D00000?style=for-the-badge&logo=keras)
+![Flask](https://img.shields.io/badge/Flask-Web%20Application-black?style=for-the-badge&logo=flask)
+![License](https://img.shields.io/badge/License-Educational-orange?style=for-the-badge)
 
-## 🚀 Overview
-
-**MalariaScope AI** is an end-to-end AI system that allows users to upload microscopic blood cell images and instantly detect the presence of *Plasmodium falciparum* parasites.
-
-The system combines:
-
-* 🔍 **Computer Vision (CNNs)**
-* ⚡ **Real-time inference (Flask backend)**
-* 🎯 **Explainable AI (Grad-CAM)**
-* 🎨 **Modern UI/UX (Dark Theme Interface)**
+</p>
 
 ---
 
-## ✨ Key Features
+# 🩺 Overview
 
-### 🧠 AI-Powered Detection
+**MalariaScope AI** is an AI-powered healthcare application designed to automatically detect malaria parasites from microscopic blood smear images using **Transfer Learning** and **Explainable AI**.
 
-* Binary classification: **Parasitized vs Uninfected**
-* Built using **MobileNetV2 (Transfer Learning)**
-* Optimized for fast and accurate predictions
+The system provides rapid, accurate predictions while offering visual explanations through **Grad-CAM heatmaps**, enabling users to understand how the deep learning model arrives at its decisions.
 
----
-
-### 🎯 Explainable AI (Grad-CAM)
-
-* Visual heatmaps showing **where the model is focusing**
-* Helps understand **model decisions**
-* Displays:
-
-  * Original image
-  * Activation map
+Built as a lightweight **Flask web application**, MalariaScope AI delivers an intuitive interface for real-time malaria screening, making it suitable for educational, research, and healthcare technology demonstrations.
 
 ---
 
-### 📊 Detailed Prediction Insights
+# 🚀 Key Features
 
-* Confidence score (%)
-* Latency (in ms)
-* Uncertainty estimation
-* Raw probability output
+🦠 Binary Malaria Detection (Parasitized vs Uninfected)
 
----
+🧠 Deep Learning using MobileNetV2 Transfer Learning
 
-### 🖥️ Professional Dark UI
+🔥 Explainable AI with Grad-CAM Heatmaps
 
-* Clean, modern, responsive interface
-* Drag & drop image upload
-* Real-time result visualization
-* Clearly separated input & result panels
+📊 Prediction Confidence & Probability Scores
 
----
+⚠️ Risk Level & Medical Advice Generation
 
-### ⚡ Real-Time Web App
+📈 Session Statistics Dashboard
 
-* Built with **Flask**
-* Instant inference after upload
-* Runs locally or on network (LAN access supported)
+📁 Batch Image Prediction
+
+⚡ Real-Time Image Processing
+
+🖥️ Modern Responsive Web Interface
+
+☁️ Lightweight Flask Deployment
 
 ---
 
-### 🗂️ Structured Pipeline
+# 🧠 AI Pipeline
 
-* Image preprocessing
-* Model inference
-* Grad-CAM generation
-* Result visualization
+```
+Blood Smear Image
+        │
+        ▼
+ Image Preprocessing
+        │
+        ▼
+ MobileNetV2 CNN
+        │
+        ▼
+ Infection Prediction
+        │
+        ▼
+ Prediction Confidence
+        │
+        ▼
+ Explainability
+ ├── Grad-CAM
+ ├── Risk Analysis
+ └── Medical Recommendation
+```
 
 ---
 
-## 🏗️ Tech Stack
+# 🏗️ Project Architecture
 
-| Layer          | Technology              |
-| -------------- | ----------------------- |
-| ML Model       | TensorFlow / Keras      |
-| Architecture   | MobileNetV2             |
-| Backend        | Flask                   |
-| Frontend       | HTML, CSS, JavaScript   |
-| Explainability | Grad-CAM                |
-| Dataset        | NIH Malaria Cell Images |
+```
+               User Upload
+                    │
+                    ▼
+          Blood Smear Image
+                    │
+                    ▼
+          Image Preprocessing
+                    │
+                    ▼
+        MobileNetV2 CNN Model
+                    │
+          ┌─────────┴─────────┐
+          ▼                   ▼
+   Infection Status      Confidence Score
+          │                   │
+          └─────────┬─────────┘
+                    ▼
+           Grad-CAM Visualization
+                    │
+                    ▼
+      Risk Assessment & Medical Advice
+```
 
 ---
 
-## 📁 Project Structure
+# 📂 Project Structure
 
-```bash
-Malaria_Cell_Detection/
+```
+MalariaScope-AI/
 │
-├── app.py                  # Flask app
-├── model.py                # Load trained model
-├── train_model.py          # Model training script
-├── preprocessing.py        # Image preprocessing
-├── gradcam.py              # Grad-CAM implementation
+├── app.py                     # Flask application
+├── model.py                   # Load trained CNN model
+├── preprocessing.py           # Image preprocessing
+├── gradcam.py                 # Explainable AI
+├── train_model.py             # Training script
+├── utils.py                   # Helper functions
 │
 ├── templates/
-│   └── index.html          # UI layout
+│   └── index.html
 │
 ├── static/
-│   ├── style.css           # Styling
-│   └── script.js           # Frontend logic
+│   ├── style.css
+│   └── script.js
 │
-├── cell_images/            # Dataset
-├── malaria_model_final.h5  # Trained model
+├── cell_images/
+│   ├── Parasitized/
+│   └── Uninfected/
+│
+├── malaria_model_final.h5
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-## 🧪 How It Works
+# 🧬 Deep Learning Model
 
-1. Upload a blood smear image
-2. Image is preprocessed (resize + normalization)
-3. Model predicts infection status
-4. Grad-CAM generates heatmap
-5. Results displayed with metrics
+| Component | Description |
+|-----------|-------------|
+| Architecture | MobileNetV2 |
+| Framework | TensorFlow / Keras |
+| Learning Method | Transfer Learning |
+| Classification | Binary Classification |
+| Classes | Parasitized, Uninfected |
 
 ---
 
-## ⚙️ Setup & Run
+# 📊 Explainable AI
 
-### 1. Clone the repo
+To improve transparency and trust, the system integrates **Grad-CAM (Gradient-weighted Class Activation Mapping)**.
+
+### 🔥 Grad-CAM
+
+Highlights the regions within a blood smear image that contribute most to the model's prediction.
+
+Benefits include:
+
+- Visual explanation of predictions
+- Improved model interpretability
+- Better understanding of parasite localization
+- Increased confidence in AI-assisted diagnosis
+
+---
+
+# 📈 Prediction Dashboard
+
+For every uploaded image, the application displays:
+
+- Infection Status
+- Prediction Confidence
+- Raw Probability Score
+- Risk Level
+- Medical Recommendation
+- Prediction Latency
+- Timestamp
+- Original Image
+- Grad-CAM Heatmap
+
+---
+
+# 📁 Dataset
+
+### NIH Malaria Cell Images Dataset
+
+The project uses the publicly available **NIH Malaria Cell Images Dataset**, containing approximately **27,500 microscopic blood smear images**.
+
+Classes:
+
+- 🦠 Parasitized
+- ✅ Uninfected
+
+The dataset is widely used for benchmarking malaria detection algorithms.
+
+---
+
+# ⚙️ Tech Stack
+
+### Programming
+
+- Python
+
+### Deep Learning
+
+- TensorFlow
+- Keras
+- MobileNetV2
+
+### Backend
+
+- Flask
+- Flask-CORS
+
+### Frontend
+
+- HTML
+- CSS
+- JavaScript
+
+### Computer Vision
+
+- OpenCV
+- Pillow
+- NumPy
+
+### Explainability
+
+- Grad-CAM
+
+---
+
+# 📈 Model Performance
+
+| Metric | Performance |
+|---------|------------|
+| Model | MobileNetV2 |
+| Accuracy | ~93–95% |
+| Classification | Binary |
+| Inference | Real-Time |
+| Deployment | Flask |
+
+> **Note:** Performance values depend on dataset splits, preprocessing, and evaluation methodology.
+
+---
+
+# 🖥️ Installation
+
+Clone the repository
 
 ```bash
-git clone <your-repo-link>
-cd Malaria_Cell_Detection
+git clone https://github.com/yourusername/MalariaScope-AI.git
 ```
 
-### 2. Create virtual environment
+Navigate to the project
 
 ```bash
-python -m venv venv
-venv\Scripts\activate
+cd MalariaScope-AI
 ```
 
-### 3. Install dependencies
+Install dependencies
 
 ```bash
-pip install tensorflow flask numpy opencv-python
+pip install -r requirements.txt
 ```
 
-### 4. Run the app
+Run the application
 
 ```bash
 python app.py
@@ -150,82 +268,90 @@ python app.py
 
 ---
 
-## 🌐 Access
+# 🚀 Usage
 
-Open in browser:
-
-```
-http://127.0.0.1:5000
-```
-
-Or on your network:
-
-```
-http://<your-ip>:5000
-```
+1. Launch the Flask application.
+2. Upload a blood smear image.
+3. The image is preprocessed automatically.
+4. The MobileNetV2 model predicts the infection status.
+5. View prediction confidence and probability.
+6. Explore Grad-CAM visualizations.
+7. Review generated medical advice and risk assessment.
 
 ---
 
-## 📈 Model Performance
+# 🌟 Dashboard Highlights
 
-* Accuracy: ~93–95%
-* Lightweight architecture (MobileNetV2)
-* Fast inference (~100–150 ms)
+✅ Single Image Prediction
 
----
+✅ Batch Image Prediction
 
-## ⚠️ Disclaimer
+✅ Confidence Scores
 
-> This project is for **educational and research purposes only**.
-> It is **not a certified medical diagnostic tool**.
+✅ Risk Assessment
 
----
+✅ Medical Advice Generation
 
-## 💡 Future Improvements
+✅ Session Analytics
 
-* Multi-class malaria classification
-* Cloud deployment (AWS / Render)
-* User authentication & history tracking
-* Mobile-friendly optimization
-* Dataset expansion for robustness
+✅ Prediction History
+
+✅ Grad-CAM Explainability
+
+✅ Responsive Dark UI
 
 ---
 
-## 🤝 Contributors
+# 🔮 Future Improvements
 
-* Limnisha Changkakati
-* Natalia Mathews
-
----
-
-## ⭐ Final Note
-
-This project demonstrates:
-
-* End-to-end ML pipeline
-* Real-world healthcare application
-* Explainable AI integration
-* Full-stack AI deployment
+- Multi-class malaria parasite classification
+- Parasite counting & parasitemia estimation
+- Cloud deployment with Docker
+- REST API integration
+- Electronic Health Record (EHR) support
+- Mobile application
+- Support for additional blood-borne diseases
+- Vision Transformer (ViT) implementation
 
 ---
 
-> 🚀 Built with passion for AI, healthcare, and impactful technology.
+# 🤝 Contributing
 
+Contributions are welcome!
 
-## Contributors
+To contribute:
 
-* Natalia Mathews
-* Limnisha Changkakati
-* Prema Malipatil
-
----
-
-## License
-
-This project is intended for educational and research purposes.
+1. Fork the repository.
+2. Create a feature branch.
+3. Commit your changes.
+4. Open a Pull Request.
 
 ---
 
-## Support
+# 📜 Disclaimer
 
-If you find this project useful, consider giving it a star on GitHub.
+This project is intended **solely for educational and research purposes**.
+
+It is **not a certified medical diagnostic system** and should not replace professional clinical judgment.
+
+---
+
+# 👨‍💻 Authors
+
+Developed by the **Limnisha Changkakati and Natalia Mathews**
+
+If you found this project useful, consider giving it a ⭐ on GitHub!
+
+---
+
+# 🌟 Support
+
+If you enjoyed this project,
+
+⭐ Star the repository
+
+🍴 Fork it
+
+📢 Share it with others
+
+Together, let's build AI solutions that improve healthcare! 🩺🚀
